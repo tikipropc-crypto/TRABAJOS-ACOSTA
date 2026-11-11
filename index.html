@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mis trabajos</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mis trabajos">
+<style>
+:root{--bg:#eef2f2;--card:#fff;--ink:#14262b;--mute:#5d7075;--line:#d5dede;--pri:#0f6b6b;--onpri:#fff;--acc:#f0b429;--danger:#b3261e;--sel:#dff0ee;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1a1d;--card:#17272b;--ink:#e8f0f0;--mute:#93a8ac;--line:#2a3f44;--pri:#3cbdb4;--onpri:#06201e;--acc:#f0b429;--danger:#ff8a80;--sel:#1d3a3b}}
+:root[data-theme="dark"]{--bg:#0e1a1d;--card:#17272b;--ink:#e8f0f0;--mute:#93a8ac;--line:#2a3f44;--pri:#3cbdb4;--onpri:#06201e;--acc:#f0b429;--danger:#ff8a80;--sel:#1d3a3b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:560px;margin:0 auto;padding:16px 14px 40px}
+h1{font-size:24px;margin:6px 0 14px;letter-spacing:-.01em}
+.tabs{display:flex;gap:6px;background:var(--card);padding:5px;border-radius:14px;border:1px solid var(--line);margin-bottom:16px}
+.tabs button{flex:1;border:0;background:none;color:var(--mute);font:inherit;font-weight:600;padding:11px 4px;border-radius:10px}
+.tabs button[aria-selected="true"]{background:var(--pri);color:var(--onpri)}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+label,.lbl{display:block;font-weight:600;font-size:14px;margin:12px 0 6px}
+label:first-child,.lbl:first-child{margin-top:0}
+input,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:12px}
+input:focus,textarea:focus,button:focus-visible,a.btn:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+textarea{min-height:84px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;padding:10px 14px;border-radius:999px}
+.chip[aria-pressed="true"]{background:var(--pri);border-color:var(--pri);color:var(--onpri);font-weight:600}
+.chip.add{border-style:dashed;color:var(--pri)}
+.chip .x{font-weight:700;color:var(--danger)}
+.row{display:flex;gap:8px}
+.btn{display:block;width:100%;text-align:center;text-decoration:none;border:0;border-radius:12px;padding:14px;font:inherit;font-weight:700;background:var(--pri);color:var(--onpri);margin-top:12px}
+.btn.alt{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+.btn.wa{background:#1f9d55;color:#fff}
+.btn.sm{display:inline-block;width:auto;padding:8px 12px;margin:0;font-size:14px}
+.link{background:none;border:0;color:var(--pri);font:inherit;font-weight:600;padding:6px 0}
+.day{font-weight:700;margin:18px 0 8px}
+.job{display:flex;justify-content:space-between;gap:10px}
+.job b{font-size:17px}
+.mute{color:var(--mute);font-size:14px}
+.acts{display:flex;gap:8px;margin-top:10px}
+.pick{display:flex;gap:12px;align-items:center;cursor:pointer;margin:0;font-weight:400}
+.pick input{width:24px;height:24px;flex:none;accent-color:var(--pri)}
+.pick.on{background:var(--sel)}
+.pick{border-radius:12px;padding:12px;border:1.5px solid var(--line);margin-bottom:8px;background:var(--card)}
+.empty{text-align:center;color:var(--mute);padding:28px 10px}
+#prev{min-height:240px;font:14px/1.5 ui-monospace,Menlo,Consolas,monospace}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<main>
+<h1>Registro de trabajos</h1>
+<div class="tabs" role="tablist">
+  <button role="tab" data-t="reg" aria-selected="true">Registrar</button>
+  <button role="tab" data-t="his" aria-selected="false">Historial</button>
+  <button role="tab" data-t="rep" aria-selected="false">Reporte</button>
+</div>
+
+<section id="reg" class="on">
+  <div class="card">
+    <div class="lbl">Tipo de trabajo</div>
+    <div class="chips" id="types"></div>
+    <div id="newtype" class="row" style="display:none;margin-top:10px">
+      <input id="ntInput" placeholder="Ej: Mantenimiento" maxlength="40">
+      <button class="btn sm" id="ntAdd" style="white-space:nowrap">Agregar</button>
+    </div>
+    <button class="link" id="editTypes">Quitar tipos</button>
+
+    <label for="client">Cliente</label>
+    <input id="client" placeholder="Nombre del cliente" autocomplete="off">
+    <label for="place">Lugar</label>
+    <input id="place" placeholder="Ej: Oficina Centro, Calle Larga" autocomplete="off">
+    <label for="date">Día</label>
+    <input id="date" type="date">
+    <label for="notes">Notas</label>
+    <textarea id="notes" placeholder="Detalles del trabajo (opcional)"></textarea>
+    <button class="btn" id="saveJob">Guardar trabajo</button>
+    <button class="btn alt" id="cancelEdit" style="display:none">Cancelar edición</button>
+  </div>
+<details class="card" id="imp">
+  <summary style="font-weight:700;cursor:pointer">Importar desde Notas</summary>
+  <div class="mute" style="margin:8px 0">Copia el texto de tu nota, pégalo aquí y se leerán los trabajos para agregarlos al registro. Revisa la lista antes de agregar.</div>
+  <textarea id="impText" placeholder="Pega aquí tu nota" style="min-height:140px"></textarea>
+  <button class="btn" id="impRead">Leer nota</button>
+  <div id="impOut" style="margin-top:12px"></div>
+</details>
+</section>
+
+<section id="his"><div id="hisList"></div>
+<div class="card"><div class="lbl">Respaldo de tus datos</div><div class="mute">Tus trabajos se guardan en este teléfono. Descarga un respaldo de vez en cuando por seguridad.</div>
+<button class="btn alt" id="bkDown">Descargar respaldo</button>
+<label class="btn alt" style="cursor:pointer">Restaurar respaldo<input type="file" id="bkFile" accept=".json,application/json" hidden></label></div></section>
+
+<section id="rep">
+  <div class="card">
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <div class="lbl" style="margin:0">Días a enviar</div>
+      <div><button class="link" id="allD">Todos</button> &nbsp; <button class="link" id="noneD">Ninguno</button></div>
+    </div>
+    <div id="days" style="margin-top:10px"></div>
+  </div>
+  <div class="card">
+    <label for="phone">WhatsApp de destino (opcional)</label>
+    <input id="phone" inputmode="tel" placeholder="Con código de país, ej: 593991234567">
+    <label for="prev">Vista previa (puedes editarla)</label>
+    <textarea id="prev"></textarea>
+    <a class="btn wa" id="wa" href="#" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+    <button class="btn alt" id="share">Compartir o guardar en Notas</button>
+    <button class="btn alt" id="copy">Copiar texto</button>
+  </div>
+</section>
+</main>
+<div id="toast"></div>
+
+<script>
+(function(){
+var types=['Instalación','Desinstalación'],jobs=[],selType=null,editId=null,removing=false,pickedDays={},phone='';
+function $(s){return document.querySelector(s)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function load(){try{var d=JSON.parse(localStorage.getItem('trabajos')||'null');if(d){types=d.types||types;jobs=d.jobs||[];phone=d.phone||''}}catch(e){}}
+function snap(){return {types:types,jobs:jobs,phone:phone}}
+function save(){
+  try{localStorage.setItem('trabajos',JSON.stringify(snap()))}catch(e){}
+}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function parse(iso){var p=iso.split('-');return new Date(+p[0],+p[1]-1,+p[2])}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+function dayLong(iso){return cap(parse(iso).toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'}))}
+function dayShort(iso){var p=iso.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
+function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},1800)}
+
+function tab(n){
+  ['reg','his','rep'].forEach(function(id){$('#'+id).classList.toggle('on',id===n)});
+  document.querySelectorAll('.tabs button').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===n)});
+  if(n==='his')renderHis();if(n==='rep')renderRep();
+}
+document.querySelectorAll('.tabs button').forEach(function(b){b.onclick=function(){tab(b.dataset.t)}});
+
+function renderTypes(){
+  var h='';
+  types.forEach(function(t,i){
+    if(removing)h+='<button class="chip" data-rm="'+i+'">'+esc(t)+' <span class="x">✕</span></button>';
+    else h+='<button class="chip" aria-pressed="'+(t===selType)+'" data-i="'+i+'">'+esc(t)+'</button>';
+  });
+  if(!removing)h+='<button class="chip add" id="addT">+ Nuevo tipo</button>';
+  $('#types').innerHTML=h;
+  $('#editTypes').textContent=removing?'Listo':'Quitar tipos';
+  $('#types').querySelectorAll('[data-i]').forEach(function(b){b.onclick=function(){selType=types[+b.dataset.i];renderTypes()}});
+  $('#types').querySelectorAll('[data-rm]').forEach(function(b){b.onclick=function(){var t=types.splice(+b.dataset.rm,1)[0];if(selType===t)selType=null;save();renderTypes()}});
+  var a=$('#addT');if(a)a.onclick=function(){$('#newtype').style.display='flex';$('#ntInput').focus()};
+}
+$('#editTypes').onclick=function(){removing=!removing;$('#newtype').style.display='none';renderTypes()};
+function addType(){
+  var v=$('#ntInput').value.trim();if(!v)return;
+  if(types.indexOf(v)<0)types.push(v);
+  selType=v;$('#ntInput').value='';$('#newtype').style.display='none';save();renderTypes();
+}
+$('#ntAdd').onclick=addType;
+$('#ntInput').onkeydown=function(e){if(e.key==='Enter')addType()};
+
+function resetForm(){
+  editId=null;$('#client').value='';$('#place').value='';$('#notes').value='';$('#date').value=today();
+  $('#saveJob').textContent='Guardar trabajo';$('#cancelEdit').style.display='none';
+}
+$('#saveJob').onclick=function(){
+  if(!selType){toast('Elige un tipo de trabajo');return}
+  var client=$('#client').value.trim(),place=$('#place').value.trim(),date=$('#date').value||today(),notes=$('#notes').value.trim();
+  if(editId){
+    jobs.forEach(function(j){if(j.id===editId){j.type=selType;j.client=client;j.place=place;j.date=date;j.notes=notes}});
+    toast('Cambios guardados');
+  }else{
+    jobs.push({id:Date.now()+''+Math.floor(Math.random()*1000),type:selType,client:client,place:place,date:date,notes:notes});
+    toast('Trabajo guardado');
+  }
+  save();resetForm();
+};
+$('#cancelEdit').onclick=resetForm;
+
+function byDay(){
+  var m={};jobs.forEach(function(j){(m[j.date]=m[j.date]||[]).push(j)});return m;
+}
+function renderHis(){
+  var m=byDay(),ds=Object.keys(m).sort().reverse(),h='';
+  if(!ds.length)h='<div class="empty">Aún no hay trabajos.<br>Agrega el primero en Registrar.</div>';
+  ds.forEach(function(d){
+    h+='<div class="day">'+esc(dayLong(d))+'</div>';
+    m[d].forEach(function(j){
+      h+='<div class="card"><div class="job"><div><b>'+esc(j.type)+'</b>'+
+      (j.client?'<div>Cliente: '+esc(j.client)+'</div>':'')+(j.place?'<div>'+esc(j.place)+'</div>':'')+(j.notes?'<div class="mute">'+esc(j.notes)+'</div>':'')+
+      '</div></div><div class="acts"><button class="btn alt sm" data-e="'+j.id+'">Editar</button>'+
+      '<button class="btn alt sm" data-d="'+j.id+'" style="color:var(--danger)">Borrar</button></div></div>';
+    });
+  });
+  $('#hisList').innerHTML=h;
+  $('#hisList').querySelectorAll('[data-e]').forEach(function(b){b.onclick=function(){
+    var j=jobs.filter(function(x){return x.id===b.dataset.e})[0];if(!j)return;
+    editId=j.id;selType=j.type;if(types.indexOf(j.type)<0)types.push(j.type);
+    $('#client').value=j.client||'';$('#place').value=j.place;$('#date').value=j.date;$('#notes').value=j.notes;
+    $('#saveJob').textContent='Guardar cambios';$('#cancelEdit').style.display='block';
+    renderTypes();tab('reg');window.scrollTo(0,0);
+  }});
+  $('#hisList').querySelectorAll('[data-d]').forEach(function(b){b.onclick=function(){
+    if(b.dataset.armed){jobs=jobs.filter(function(x){return x.id!==b.dataset.d});save();renderHis();return}
+    b.dataset.armed='1';b.textContent='¿Seguro? Toca otra vez';
+    setTimeout(function(){if(b.isConnected){delete b.dataset.armed;b.textContent='Borrar'}},3000);
+  }});
+}
+
+function renderRep(){
+  var m=byDay(),ds=Object.keys(m).sort().reverse(),h='';
+  if(!ds.length)h='<div class="empty">No hay trabajos para reportar.</div>';
+  ds.forEach(function(d){
+    var names=m[d].map(function(j){return j.type}).join(', ');
+    h+='<label class="pick'+(pickedDays[d]?' on':'')+'"><input type="checkbox" data-d="'+d+'"'+(pickedDays[d]?' checked':'')+'><span><b>'+esc(dayLong(d))+'</b><br><span class="mute">'+m[d].length+(m[d].length===1?' trabajo: ':' trabajos: ')+esc(names)+'</span></span></label>';
+  });
+  $('#days').innerHTML=h;
+  $('#days').querySelectorAll('input').forEach(function(c){c.onchange=function(){pickedDays[c.dataset.d]=c.checked;c.parentNode.classList.toggle('on',c.checked);updPrev()}});
+  $('#phone').value=phone;
+  updPrev();
+}
+$('#allD').onclick=function(){Object.keys(byDay()).forEach(function(d){pickedDays[d]=true});renderRep()};
+$('#noneD').onclick=function(){pickedDays={};renderRep()};
+
+function buildText(){
+  var m=byDay(),ds=Object.keys(m).filter(function(d){return pickedDays[d]}).sort();
+  if(!ds.length)return '';
+  var L=['*REPORTE DE TRABAJOS*',ds.length>1?'Del '+dayShort(ds[0])+' al '+dayShort(ds[ds.length-1]):'Día '+dayShort(ds[0]),''],total=0,counts={};
+  ds.forEach(function(d){
+    L.push('*'+dayLong(d)+'*');
+    m[d].forEach(function(j,i){
+      total++;counts[j.type]=(counts[j.type]||0)+1;
+      L.push((i+1)+') '+j.type);
+      if(j.client)L.push('    Cliente: '+j.client);
+      if(j.place)L.push('    Lugar: '+j.place);
+      if(j.notes)L.push('    Notas: '+j.notes);
+    });
+    L.push('');
+  });
+  L.push('------------------');
+  L.push('*Total: '+total+(total===1?' trabajo*':' trabajos*'));
+  Object.keys(counts).forEach(function(t){L.push('- '+t+': '+counts[t])});
+  return L.join('\n');
+}
+function updPrev(){
+  $('#prev').value=buildText();
+  var p=phone.replace(/\D/g,'');
+  $('#wa').href='https://wa.me/'+p+'?text='+encodeURIComponent($('#prev').value);
+}
+$('#prev').oninput=function(){var p=phone.replace(/\D/g,'');$('#wa').href='https://wa.me/'+p+'?text='+encodeURIComponent($('#prev').value)};
+$('#phone').oninput=function(){phone=this.value;save();$('#prev').oninput()};
+$('#wa').onclick=function(e){if(!$('#prev').value.trim()){e.preventDefault();toast('Elige al menos un día')}};
+$('#share').onclick=function(){
+  var t=$('#prev').value;if(!t.trim()){toast('Elige al menos un día');return}
+  if(navigator.share){navigator.share({text:t}).catch(function(){})}else copyTxt(t);
+};
+$('#copy').onclick=function(){var t=$('#prev').value;if(!t.trim()){toast('Elige al menos un día');return}copyTxt(t)};
+function copyTxt(t){
+  function fb(){var p=$('#prev');p.select();try{document.execCommand('copy');toast('Texto copiado')}catch(e){toast('Mantén presionado para copiar')}}
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(function(){toast('Texto copiado')},fb);else fb();
+}
+
+var impItems=[];
+function renderImp(){
+  var out=$('#impOut');
+  if(!impItems.length){out.innerHTML='<div class="empty" style="padding:10px">No encontré trabajos en esa nota.</div>';return}
+  var h='<div class="lbl">Encontré '+impItems.length+(impItems.length===1?' trabajo':' trabajos')+'</div>',n=0;
+  impItems.forEach(function(o,i){
+    if(o.on)n++;
+    h+='<label class="pick'+(o.on?' on':'')+'"><input type="checkbox" data-k="'+i+'"'+(o.on?' checked':'')+'><span><b>'+esc(o.type)+'</b> · '+esc(dayShort(o.date))+'<br><span class="mute">'+esc([o.client,o.place].filter(Boolean).join(' · ')||'Sin cliente ni lugar')+(o.notes?' — '+esc(o.notes):'')+(o.dup?' (ya registrado)':'')+'</span></span></label>';
+  });
+  h+='<button class="btn" id="impAdd"'+(n?'':' disabled')+'>Agregar '+n+' al registro</button>';
+  out.innerHTML=h;
+  out.querySelectorAll('input').forEach(function(c){c.onchange=function(){impItems[+c.dataset.k].on=c.checked;renderImp()}});
+  $('#impAdd').onclick=function(){
+    var added=0;
+    impItems.forEach(function(o){
+      if(!o.on)return;
+      if(types.indexOf(o.type)<0)types.push(o.type);
+      jobs.push({id:Date.now()+''+Math.floor(Math.random()*100000)+added,type:o.type,client:o.client,place:o.place,date:o.date,notes:o.notes});
+      added++;
+    });
+    save();renderTypes();impItems=[];$('#impText').value='';$('#impOut').innerHTML='';
+    toast(added+(added===1?' trabajo agregado':' trabajos agregados'));
+  };
+}
+function norm(x){return x.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
+var MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function iso3(d,mo,y){if(y<100)y+=2000;if(mo<1||mo>12||d<1||d>31)return null;return y+'-'+String(mo).padStart(2,'0')+'-'+String(d).padStart(2,'0')}
+function findDate(line){
+  var yr=new Date().getFullYear(),m=line.match(/(\d{1,2})[\/\-.](\d{1,2})(?:[\/\-.](\d{2,4}))?/);
+  if(m)return {iso:iso3(+m[1],+m[2],m[3]?+m[3]:yr),txt:m[0]};
+  m=norm(line).match(/(\d{1,2})\s+de\s+(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)(?:\s+(?:de\s+)?(\d{4}))?/);
+  if(m)return {iso:iso3(+m[1],MESES.indexOf(m[2])+1,m[3]?+m[3]:yr),txt:line.substr(m.index,m[0].length)};
+  return null;
+}
+function parseNote(txt){
+  var cur=today(),res=[],cand=types.slice().sort(function(a,b){return b.length-a.length});
+  txt.split(/\r?\n/).forEach(function(raw){
+    var line=raw.normalize('NFC').trim().replace(/^[\-•*·]\s*/,'').replace(/^\d+[.)]\s+/,'');
+    if(!line)return;
+    var fm=line.match(/^(cliente|lugar|notas?)\s*[:=]\s*(.*)$/i);
+    if(fm&&res.length){var k=norm(fm[1]),last=res[res.length-1];if(k==='cliente')last.client=fm[2].trim();else if(k==='lugar')last.place=fm[2].trim();else last.notes=(last.notes?last.notes+', ':'')+fm[2].trim();return}
+    var dt=findDate(line),nl=norm(line),t=null,idx=-1;
+    cand.forEach(function(c){if(!t){var p=nl.indexOf(norm(c));if(p>=0){t=c;idx=p}}});
+    if(!t){if(dt&&dt.iso)cur=dt.iso;return}
+    var rest=line.slice(0,idx)+' | '+line.slice(idx+t.length);
+    if(dt)rest=rest.replace(dt.txt,' | ');
+    var cl='',pl='';
+    var m1=rest.match(/cliente\s*[:=]\s*((?:(?!lugar\s*[:=])[^|,;])+)/i);if(m1){cl=m1[1].trim();rest=rest.replace(m1[0],' | ')}
+    var m2=rest.match(/lugar\s*[:=]\s*([^|,;]+)/i);if(m2){pl=m2[1].trim();rest=rest.replace(m2[0],' | ')}
+    var parts=rest.split(/\s*[|\-–—,;·:]\s*|\s{2,}/).map(function(x){return x.trim()}).filter(Boolean);
+    if(!cl&&parts.length)cl=parts.shift();
+    if(!pl&&parts.length)pl=parts.shift();
+    res.push({type:t,client:cl,place:pl,date:(dt&&dt.iso)||cur,notes:parts.join(', ')});
+  });
+  return res;
+}
+$('#impRead').onclick=function(){
+  var txt=$('#impText').value.trim();if(!txt){toast('Pega primero tu nota');return}
+  impItems=parseNote(txt);
+  impItems.forEach(function(o){
+    o.dup=jobs.some(function(j){return j.date===o.date&&j.type===o.type&&(j.place||'')===o.place&&(j.client||'')===o.client});
+    o.on=!o.dup;
+  });
+  renderImp();
+};
+$('#bkDown').onclick=function(){
+  var b=new Blob([JSON.stringify(snap(),null,1)],{type:'application/json'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download='respaldo-trabajos-'+today()+'.json';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},2000);
+};
+$('#bkFile').onchange=function(){
+  var f=this.files[0];if(!f)return;var r=new FileReader();
+  r.onload=function(){
+    try{
+      var d=JSON.parse(r.result),ids={};jobs.forEach(function(j){ids[j.id]=1});
+      (d.jobs||[]).forEach(function(j){if(j&&j.id&&!ids[j.id]){jobs.push(j);ids[j.id]=1}});
+      (d.types||[]).forEach(function(t){if(types.indexOf(t)<0)types.push(t)});
+      save();renderTypes();renderHis();toast('Respaldo restaurado');
+    }catch(e){toast('Archivo no válido')}
+  };
+  r.readAsText(f);this.value='';
+};
+if(navigator.storage&&navigator.storage.persist){try{navigator.storage.persist()}catch(e){}}
+load();$('#date').value=today();renderTypes();
+
+})();
+</script>
+</body>
+</html>
